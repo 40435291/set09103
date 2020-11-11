@@ -5,6 +5,17 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt  
 
 app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+# MySQL (Connection)
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'pw'
+app.config['MYSQL_DB'] = 'flasknote'
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+
+# MySQL (Initialisation)
+mysql = MySQL(app)
 
 Notes = Notes()
 
@@ -28,7 +39,26 @@ def help():
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
-        return render_template('register.html')
+        name = form.name.data
+        username = form.username.data
+        email = form.email.data
+        password = sha256_crypt.encrypt(str(form.password.data))
+
+        # Create Cursor
+        cur = mysql.connection.cursor()
+        
+        # Database query
+        cur.execute("INSERT INTO users(name, username, email,password) VALUES(%s, %s, %s, %s)", (name, username, email, password))
+        
+        # Commit to Database
+        mysql.connection.commit()
+        
+        # Close DB connection
+        cur.close()
+
+        flash('You have successfully registered. Please log in.', 'success')
+
+        return redirect(url_for('index'))
     return render_template('register.html', form=form)
 
 class RegisterForm(Form):
