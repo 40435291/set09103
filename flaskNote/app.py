@@ -42,7 +42,7 @@ def register():
         name = form.name.data
         username = form.username.data
         email = form.email.data
-        password = sha256_crypt.encrypt(str(form.password.data))
+        password = sha256_crypt.hash(str(form.password.data))
 
         # Create Cursor
         cur = mysql.connection.cursor()
