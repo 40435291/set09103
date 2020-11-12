@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<div class="d-flex justify-content-between">
+    <h1>Dashboard</h1>
+    <div class="d-flex">
+        <small class="alert alert-info">{{session.name}} logged in as ({{session.username}})</small>
+    </div>
+</div>
+
+<a href="/add_note" class="btn btn-success mt-4">Add a Note</a>
+<hr>
+
+{% endblock %}
