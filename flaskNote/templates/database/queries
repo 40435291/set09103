@@ -25,3 +25,4 @@ DESCRIBE users;
 TRUNCATE TABLE users;
 DESCRIBE notes;
 TRUNCATE TABLE notes;
+SELECT * FROM notes;

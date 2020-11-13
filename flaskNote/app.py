@@ -1,5 +1,5 @@
 from flask import Flask, render_template, flash, redirect, request, url_for, session, logging, g
-from data import Notes
+from data import Notes, Faqs
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt 
@@ -19,6 +19,7 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
 Notes = Notes()
+Faqs = Faqs()
 
 # Index
 @app.route('/')
@@ -35,10 +36,20 @@ def notes():
 def note(id):
     return render_template('note.html', id=id)
 
+# FAQs
+@app.route('/faqs')
+def faqs():
+    return render_template('faqs.html', faqs = Faqs)
+
+# FAQ
+@app.route('/faq/<string:id>/')
+def faq(id):
+    return render_template('faq.html', id=id)
+
 # Help
-@app.route('/help')
-def help():
-    return render_template('help.html')
+# @app.route('/help')
+# def help():
+#     return render_template('help.html')
 
 # User Registration
 @app.route('/register', methods=['GET', 'POST'])
@@ -132,7 +143,22 @@ def logout():
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
-    return render_template('dashboard.html')
+    # Create Cursor
+    cur = mysql.connection.cursor()
+
+    # Retrieve Notes
+    result = cur.execute("SELECT * FROM notes")
+    notes = cur.fetchall()
+    
+    if result > 0:
+        # Retrieve stored Notes
+        return render_template('dashboard.html', notes=notes)
+    else:
+        msg = "No Notes found."
+        return render_template('dashboard.html', msg=msg)
+
+    # Close DB connection
+    cur.close()
 
 # Add Note
 @app.route('/add_note', methods=['GET', 'POST'])
