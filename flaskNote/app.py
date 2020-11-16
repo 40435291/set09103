@@ -245,14 +245,15 @@ def edit_note(id):
     form.description.data = note['description']
     
     if request.method == 'POST' and form.validate():
-        title = form.title.data
-        description = form.description.data
+        # Update using form data
+        title = request.form['title']
+        description = request.form['description']
 
         # Create Cursor
         cur = mysql.connection.cursor()
         
         # Database query
-        cur.execute("UPDATE notes SET name=%s, body=%s WHERE id=%s", (name, body, id))
+        cur.execute("UPDATE notes SET title=%s, description=%s WHERE id=%s", (title, description, id))
         
         # Commit to Database
         mysql.connection.commit()
@@ -265,7 +266,25 @@ def edit_note(id):
         return redirect(url_for('dashboard'))
     return render_template('edit_note.html', form=form)
 
+# DELETE Note
+@app.route('/delete_note/<string:id>', methods=['POST'])
+@is_logged_in
+def delete_note(id):
+    # Create Cursor
+    cur = mysql.connection.cursor()
+    
+    # Database query
+    cur.execute("DELETE FROM notes WHERE id=%s", [id])
+        
+    # Commit to Database
+    mysql.connection.commit()
+    
+    # Close DB connection
+    cur.close()
 
+    flash('Note deleted.', 'success')
+
+    return redirect(url_for('dashboard'))
 
 # Add FAQ
 @app.route('/add_faq', methods=['GET', 'POST'])
@@ -293,6 +312,66 @@ def add_faq():
         return redirect(url_for('faqs'))
     return render_template('add_faq.html', form=form)
 
+# EDIT faq
+@app.route('/edit_faq/<string:id>', methods=['GET', 'POST'])
+@is_logged_in
+def edit_faq(id):
+    # Create Cursor
+    cur = mysql.connection.cursor()
+    
+    # Database query
+    result = cur.execute("SELECT * FROM faqs WHERE id = %s", [id])
+
+    faq = cur.fetchone()
+
+    # Get Form
+    form = FaqForm(request.form)
+
+    #Populate Form fields
+    form.title.data = faq['title']
+    form.description.data = faq['description']
+    
+    if request.method == 'POST' and form.validate():
+        # Update using form data
+        title = request.form['title']
+        description = request.form['description']
+
+        # Create Cursor
+        cur = mysql.connection.cursor()
+        
+        # Database query
+        cur.execute("UPDATE faqs SET title=%s, description=%s WHERE id=%s", (title, description, id))
+        
+        # Commit to Database
+        mysql.connection.commit()
+        
+        # Close DB connection
+        cur.close()
+
+        flash('faq updated.', 'success')
+
+        return redirect(url_for('faqs'))
+    return render_template('edit_faq.html', form=form)
+
+# DELETE Faq
+@app.route('/delete_faq/<string:id>', methods=['POST'])
+@is_logged_in
+def delete_faq(id):
+    # Create Cursor
+    cur = mysql.connection.cursor()
+    
+    # Database query
+    cur.execute("DELETE FROM faqs WHERE id=%s", [id])
+        
+    # Commit to Database
+    mysql.connection.commit()
+    
+    # Close DB connection
+    cur.close()
+
+    flash('FAQ deleted.', 'success')
+
+    return redirect(url_for('faqs'))
 
 # Register Form
 class RegisterForm(Form):

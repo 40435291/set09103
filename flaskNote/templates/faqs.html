@@ -25,12 +25,17 @@
     {% for faq in faqs %}
     
     <tr>
-        <th>{{faq.id}}</th>
-        <th>{{faq.title}}</th>
-        <th>{{faq.author}}</th>
-        <th>{{faq.create_date}}</th>
-        <th><a href="edit_faq/{{faq.id}}" class="btn btn-info float-right">Edit</a></th>
-        <th><a href="#" class="btn btn-danger float-right">Delete</a></th>
+        <td>{{faq.id}}</td>
+        <td>{{faq.title}}</td>
+        <td>{{faq.author}}</td>
+        <td>{{faq.create_date}}</td>
+        <td><a href="edit_faq/{{faq.id}}" class="btn btn-info float-right">Edit</a></td>
+        <td>            
+            <form action="{{url_for('delete_faq', id=faq.id)}}" method="POST">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="submit" class="btn btn-danger" value="DELETE">
+            </form>
+    </td>
     </tr>
     {% endfor %}
 </table>
