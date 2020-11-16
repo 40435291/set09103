@@ -226,44 +226,44 @@ def add_note():
     return render_template('add_note.html', form=form)
 
 # EDIT Note
-# @app.route('/edit_note/<string:id>', methods=['GET', 'POST'])
-# @is_logged_in
-# def edit_note(id):
-#         # Create Cursor
-#         cur = mysql.connection.cursor()
-        
-#         # Database query
-#         result = cur.execute("SELECT * FROM notes WHERE id = %s", [id])
-
-#         note = cur.fetchone()
-
-#         # Get Form
-#         note = NoteForm(request.form)
-
-#         #Populate Form fields
-#         form.title.data = note['title']
-#         form.description.data = note['description']
+@app.route('/edit_note/<string:id>', methods=['GET', 'POST'])
+@is_logged_in
+def edit_note(id):
+    # Create Cursor
+    cur = mysql.connection.cursor()
     
-#     if request.method == 'POST' and form.validate():
-#         title = form.title.data
-#         description = form.description.data
+    # Database query
+    result = cur.execute("SELECT * FROM notes WHERE id = %s", [id])
 
-#         # Create Cursor
-#         cur = mysql.connection.cursor()
-        
-#         # Database query
-#         cur.execute("UPDATE notes SET name=%s, body=%s WHERE id = %s", (name, body, id) ))
-        
-#         # Commit to Database
-#         mysql.connection.commit()
-        
-#         # Close DB connection
-#         cur.close()
+    note = cur.fetchone()
 
-#         flash('Note updated.', 'success')
+    # Get Form
+    form = NoteForm(request.form)
 
-#         return redirect(url_for('dashboard'))
-#     return render_template('edit_note.html', form=form)
+    #Populate Form fields
+    form.title.data = note['title']
+    form.description.data = note['description']
+    
+    if request.method == 'POST' and form.validate():
+        title = form.title.data
+        description = form.description.data
+
+        # Create Cursor
+        cur = mysql.connection.cursor()
+        
+        # Database query
+        cur.execute("UPDATE notes SET name=%s, body=%s WHERE id=%s", (name, body, id))
+        
+        # Commit to Database
+        mysql.connection.commit()
+        
+        # Close DB connection
+        cur.close()
+
+        flash('Note updated.', 'success')
+
+        return redirect(url_for('dashboard'))
+    return render_template('edit_note.html', form=form)
 
 
 
