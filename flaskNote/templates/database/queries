@@ -20,6 +20,14 @@ CREATE TABLE notes
     create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
+CREATE TABLE faqs
+    (id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255),
+    author VARCHAR(100),
+    description TEXT,
+    create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
 SHOW TABLES;
 DESCRIBE users;
 TRUNCATE TABLE users;

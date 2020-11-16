@@ -1,5 +1,4 @@
 from flask import Flask, render_template, flash, redirect, request, url_for, session, logging, g
-from data import Notes, Faqs
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt 
@@ -18,9 +17,6 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # MySQL (Initialisation)
 mysql = MySQL(app)
 
-Notes = Notes()
-Faqs = Faqs()
-
 # Index
 @app.route('/')
 def index():
@@ -29,27 +25,71 @@ def index():
 # Notes
 @app.route('/notes')
 def notes():
-    return render_template('notes.html', notes = Notes)
+    # Create Cursor
+    cur = mysql.connection.cursor()
+
+    # Retrieve Notes
+    result = cur.execute("SELECT * FROM notes")
+    notes = cur.fetchall()
+    
+    if result > 0:
+        return render_template('notes.html', notes=notes)
+    else:
+        msg = "No Notes found."
+        return render_template('notes.html', msg=msg)
+
+    # Close DB connection
+    cur.close()
+
 
 # Note
 @app.route('/note/<string:id>/')
 def note(id):
-    return render_template('note.html', id=id)
+    # Create Cursor
+    cur = mysql.connection.cursor()
+
+    # Retrieve specific Note
+    result = cur.execute("SELECT * FROM notes WHERE id = %s", [id])
+    note = cur.fetchone()
+
+    return render_template('note.html', note=note)
+
 
 # FAQs
 @app.route('/faqs')
 def faqs():
-    return render_template('faqs.html', faqs = Faqs)
+    # Create Cursor
+    cur = mysql.connection.cursor()
 
-# FAQ
+    # Retrieve All FAQs
+    result = cur.execute("SELECT * FROM faqs")
+    faqs = cur.fetchall()
+    
+    if result > 0:
+        return render_template('faqs.html', faqs=faqs)
+    else:
+        msg = "No FAQs found."
+        return render_template('faqs.html', msg=msg)
+
+    # Close DB connection
+    cur.close()
+
+# Retrieve selected FAQ
 @app.route('/faq/<string:id>/')
 def faq(id):
-    return render_template('faq.html', id=id)
+    # Create Cursor
+    cur = mysql.connection.cursor()
 
-# Help
-# @app.route('/help')
-# def help():
-#     return render_template('help.html')
+    # Retrieve specific FAQ
+    result = cur.execute("SELECT * FROM faqs WHERE id = %s", [id])
+    faq = cur.fetchone()
+
+    return render_template('faq.html', faq=faq)
+
+    # Close DB connection
+    cur.close()
+
+    return render_template('faq.html', id=id)
 
 # User Registration
 @app.route('/register', methods=['GET', 'POST'])
@@ -151,7 +191,6 @@ def dashboard():
     notes = cur.fetchall()
     
     if result > 0:
-        # Retrieve stored Notes
         return render_template('dashboard.html', notes=notes)
     else:
         msg = "No Notes found."
@@ -186,6 +225,74 @@ def add_note():
         return redirect(url_for('dashboard'))
     return render_template('add_note.html', form=form)
 
+# EDIT Note
+# @app.route('/edit_note/<string:id>', methods=['GET', 'POST'])
+# @is_logged_in
+# def edit_note(id):
+#         # Create Cursor
+#         cur = mysql.connection.cursor()
+        
+#         # Database query
+#         result = cur.execute("SELECT * FROM notes WHERE id = %s", [id])
+
+#         note = cur.fetchone()
+
+#         # Get Form
+#         note = NoteForm(request.form)
+
+#         #Populate Form fields
+#         form.title.data = note['title']
+#         form.description.data = note['description']
+    
+#     if request.method == 'POST' and form.validate():
+#         title = form.title.data
+#         description = form.description.data
+
+#         # Create Cursor
+#         cur = mysql.connection.cursor()
+        
+#         # Database query
+#         cur.execute("UPDATE notes SET name=%s, body=%s WHERE id = %s", (name, body, id) ))
+        
+#         # Commit to Database
+#         mysql.connection.commit()
+        
+#         # Close DB connection
+#         cur.close()
+
+#         flash('Note updated.', 'success')
+
+#         return redirect(url_for('dashboard'))
+#     return render_template('edit_note.html', form=form)
+
+
+
+# Add FAQ
+@app.route('/add_faq', methods=['GET', 'POST'])
+@is_logged_in
+def add_faq():
+    form = FaqForm(request.form)
+    if request.method == 'POST' and form.validate():
+        title = form.title.data
+        description = form.description.data
+
+        # Create Cursor
+        cur = mysql.connection.cursor()
+        
+        # Database query
+        cur.execute("INSERT INTO faqs(title, description, author) VALUES(%s, %s, %s)", (title, description, session['name']))
+        
+        # Commit to Database
+        mysql.connection.commit()
+        
+        # Close DB connection
+        cur.close()
+
+        flash('FAQ added.', 'success')
+
+        return redirect(url_for('faqs'))
+    return render_template('add_faq.html', form=form)
+
 
 # Register Form
 class RegisterForm(Form):
@@ -203,7 +310,10 @@ class NoteForm(Form):
     title = StringField('Title', [validators.Length(min=1, max=200)])    
     description = TextAreaField('Description', [validators.Length(min=25)]) 
 
-    
+# FAQ Form
+class FaqForm(Form):
+    title = StringField('Title', [validators.Length(min=1, max=200)])    
+    description = TextAreaField('Description', [validators.Length(min=25)])    
 
 if __name__ == '__main__':
     app.run(debug=True)

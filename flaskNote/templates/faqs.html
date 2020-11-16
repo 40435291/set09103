@@ -1,11 +1,52 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-
+{% if session.logged_in != NULL: %}
+<div class="d-flex justify-content-between">
     <h1>FAQs</h1>
-    <ul class="list-group">
-        {% for faq in faqs %}
-        <li class="list-group-item"><a href="faq/{{faq.body}}">{{faq.title}}</a></li>
-        {% endfor %}
-    </ul>
+        <div class="d-flex">
+            <small class="alert alert-info">{{session.name}} logged in as ({{session.username}})</small>
+        </div>
+</div>
+
+<a href="/add_faq" class="btn btn-success mt-4">Add a FAQ</a>
+<hr>
+
+<table class="table table-striped">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Date</th>
+        <th></th>
+        <th></th>
+    </tr>
+
+    {% for faq in faqs %}
+    
+    <tr>
+        <th>{{faq.id}}</th>
+        <th>{{faq.title}}</th>
+        <th>{{faq.author}}</th>
+        <th>{{faq.create_date}}</th>
+        <th><a href="edit_faq/{{faq.id}}" class="btn btn-info float-right">Edit</a></th>
+        <th><a href="#" class="btn btn-danger float-right">Delete</a></th>
+    </tr>
+    {% endfor %}
+</table>
+<hr>
+<ul class="list-group">
+    {% for faq in faqs %}
+        <li class="list-group-item"><a href="faq/{{faq.id}}">{{faq.title}}</a></li>
+    {% endfor %}
+</ul>
+{% else: %}
+<h1>FAQs</h1>
+
+<ul class="list-group">
+    {% for faq in faqs %}
+    <li class="list-group-item"><a href="faq/{{faq.id}}">{{faq.title}}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}

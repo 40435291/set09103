@@ -1,5 +1,12 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <p>{{id}}</p>
+
+    <h1>{{faq.title}}</h1>
+    <hr>
+    <div>
+        {{faq.description | safe}}
+    </div>
+    <small>{{faq.author}} ({{faq.create_date}})</small>
+
 {% endblock %}
