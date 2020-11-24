@@ -1,57 +1,62 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-{% if session.logged_in != NULL: %}
-<div class="d-flex justify-content-between">
-    <h1>FAQs</h1>
-        <div class="d-flex">
-            <small class="alert alert-info">{{session.name}} logged in as ({{session.username}})</small>
+    {% if session.logged_in != NULL: %}
+        <div class="d-flex justify-content-between">
+            <h1>FAQs</h1>
+                <div class="d-flex">
+                    <small class="alert alert-info">{{session.name}} logged in as ({{session.username}})</small>
+                </div>
         </div>
-</div>
 
-<a href="/add_faq" class="btn btn-success mt-4">Add a FAQ</a>
-<hr>
+        <a href="/add_faq" class="btn btn-success mt-4">Add a FAQ</a>
+        <hr>
 
-<table class="table table-striped">
-    <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Date</th>
-        <th></th>
-        <th></th>
-    </tr>
+        {% for faq in faqs %}
+            <ul class="list-group">
+                    <li class="list-group-item"><a href="faq/{{faq.id}}">{{faq.title}}</a></li>
+            </ul>
 
-    {% for faq in faqs %}
-    
-    <tr>
-        <td>{{faq.id}}</td>
-        <td>{{faq.title}}</td>
-        <td>{{faq.author}}</td>
-        <td>{{faq.create_date}}</td>
-        <td><a href="edit_faq/{{faq.id}}" class="btn btn-info float-right">Edit</a></td>
-        <td>            
-            <form action="{{url_for('delete_faq', id=faq.id)}}" method="POST">
-                <input type="hidden" name="_method" value="DELETE">
-                <input type="submit" class="btn btn-danger" value="DELETE">
-            </form>
-    </td>
-    </tr>
-    {% endfor %}
-</table>
-<hr>
-<ul class="list-group">
-    {% for faq in faqs %}
-        <li class="list-group-item"><a href="faq/{{faq.id}}">{{faq.title}}</a></li>
-    {% endfor %}
-</ul>
-{% else: %}
-<h1>FAQs</h1>
+            {% if session.name == faq.author: %}
+                <!-- <small>Session: {{session.name}} - Author: {{faq.author}}</small> -->
+                <hr>
+                <table class="table table-striped">
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Date</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
 
-<ul class="list-group">
-    {% for faq in faqs %}
-    <li class="list-group-item"><a href="faq/{{faq.id}}">{{faq.title}}</a></li>
-    {% endfor %}
-</ul>
-{% endif %}
+                    
+                    <tr>
+                        <td>{{faq.id}}</td>
+                        <td>{{faq.title}}</td>
+                        <td>{{faq.author}}</td>
+                        <td>{{faq.create_date}}</td>
+                        <td><a href="edit_faq/{{faq.id}}" class="btn btn-info float-right">Edit</a></td>
+                        <td>            
+                            <form action="{{url_for('delete_faq', id=faq.id)}}" method="POST">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="submit" class="btn btn-danger" value="DELETE">
+                            </form>
+                    </td>
+                    </tr>
+                </table>
+                <hr>
+            {% endif %}
+
+        {% endfor %}
+
+    {% else: %}
+        <h1>FAQs</h1>
+
+        <ul class="list-group">
+            {% for faq in faqs %}
+            <li class="list-group-item"><a href="faq/{{faq.id}}">{{faq.title}}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock %}

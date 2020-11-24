@@ -234,7 +234,6 @@ def edit_note(id):
     
     # Database query
     result = cur.execute("SELECT * FROM notes WHERE id = %s", [id])
-
     note = cur.fetchone()
 
     # Get Form
@@ -321,7 +320,6 @@ def edit_faq(id):
     
     # Database query
     result = cur.execute("SELECT * FROM faqs WHERE id = %s", [id])
-
     faq = cur.fetchone()
 
     # Get Form
