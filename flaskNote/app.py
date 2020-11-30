@@ -1,8 +1,9 @@
 from flask import Flask, render_template, flash, redirect, request, url_for, session, logging, g
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
-from passlib.hash import sha256_crypt 
+# from passlib.hash import sha256_crypt 
 from functools import wraps
+import bcrypt
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -99,7 +100,8 @@ def register():
         name = form.name.data
         username = form.username.data
         email = form.email.data
-        password = sha256_crypt.hash(str(form.password.data))
+        # password = sha256_crypt.hash(str(form.password.data))
+        password = bcrypt.hashpw(str(form.password.data).encode('utf-8'), bcrypt.gensalt())
 
         # Create Cursor
         cur = mysql.connection.cursor()
@@ -140,7 +142,8 @@ def login():
 
 
             # Password comparison
-            if sha256_crypt.verify(password_entered, password):
+            # if sha256_crypt.verify(password_entered, password):
+            if bcrypt.checkpw(password_entered.encode('utf-8'), password.encode('utf-8')):
                 # Session started (password validation passed)
                 session['logged_in'] = True
                 session['username'] = username
