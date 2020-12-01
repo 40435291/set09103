@@ -1,9 +1,9 @@
 from flask import Flask, render_template, flash, redirect, request, url_for, session, logging, g
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
-# from passlib.hash import sha256_crypt 
 from functools import wraps
 import bcrypt
+from MySQLdb._exceptions import IntegrityError
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -95,30 +95,34 @@ def faq(id):
 # User Registration
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm(request.form)
-    if request.method == 'POST' and form.validate():
-        name = form.name.data
-        username = form.username.data
-        email = form.email.data
-        # password = sha256_crypt.hash(str(form.password.data))
-        password = bcrypt.hashpw(str(form.password.data).encode('utf-8'), bcrypt.gensalt())
+    try:
+        form = RegisterForm(request.form)
+        if request.method == 'POST' and form.validate():
+            name = form.name.data
+            username = form.username.data
+            email = form.email.data
+            # password = sha256_crypt.hash(str(form.password.data)) - Can be used instead of bcrypt
+            password = bcrypt.hashpw(str(form.password.data).encode('utf-8'), bcrypt.gensalt())
 
-        # Create Cursor
-        cur = mysql.connection.cursor()
-        
-        # Database query
-        cur.execute("INSERT INTO users(name, username, email,password) VALUES(%s, %s, %s, %s)", (name, username, email, password))
-        
-        # Commit to Database
-        mysql.connection.commit()
-        
-        # Close DB connection
-        cur.close()
+            # Create Cursor
+            cur = mysql.connection.cursor()
+            
+            # Database query
+            cur.execute("INSERT INTO users(name, username, email,password) VALUES(%s, %s, %s, %s)", (name, username, email, password))
+            
+            # Commit to Database
+            mysql.connection.commit()
+            
+            # Close DB connection
+            cur.close()
 
-        flash('You have successfully registered.', 'success')
+            flash('You have successfully registered.', 'success')
 
-        return redirect(url_for('index'))
-    return render_template('register.html', form=form)
+            return redirect(url_for('index'))
+        return render_template('register.html', form=form)
+    except IntegrityError:
+        flash('A user with that Username is already registered.', 'warning')
+        return render_template('register.html', form=form)
 
 # Login functionality
 @app.route('/login', methods=['GET', 'POST'])
@@ -142,7 +146,6 @@ def login():
 
 
             # Password comparison
-            # if sha256_crypt.verify(password_entered, password):
             if bcrypt.checkpw(password_entered.encode('utf-8'), password.encode('utf-8')):
                 # Session started (password validation passed)
                 session['logged_in'] = True
