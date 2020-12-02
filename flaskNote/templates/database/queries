@@ -17,7 +17,7 @@ CREATE TABLE notes
     title VARCHAR(255),
     author VARCHAR(100),
     description TEXT,
-    create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    create_date DATE DEFAULT curdate()
     );
 
 CREATE TABLE faqs
@@ -25,8 +25,30 @@ CREATE TABLE faqs
     title VARCHAR(255),
     author VARCHAR(100),
     description TEXT,
-    create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    create_date DATE DEFAULT curdate()
     );
+
+INSERT INTO `users` (`id`, `name`, `email`, `username`, `password`, `register_date`) VALUES
+(3, 'Jan Pampoen', 'jpampoen@mail.com', 'Pampoen', '$2b$12$ZxjkWwgNBo6183EARbtEgudXlw7Ih9eN3ZR/JosUv5GhsKeDGpvuS', '2020-11-30 11:11:51'),
+(4, 'Koos Kakebeen', 'kkakebeen@mail.com', 'Kakebeen', '$2b$12$YIU7Pyik7xjZfvijQYlMW.vSieO9I17eko8rYEAq8NkD7CSK9vjh2', '2020-11-30 11:13:47');
+
+-----------------------------
+INSERT INTO `notes` (`id`, `title`, `author`, `description`, `create_date`) VALUES
+(1, 'Note-1', 'Jan Pampoen', '<p>First Note added to the Database</p>\r\n', '2020-11-21'),
+(2, 'Note-2', 'Piet Pompies', '<p>Second Note added to the Database</p>\r\n', '2020-11-22'),
+(3, 'Note-3', 'Jan Pampoen', '<p>Third Note added to the Database</p>\r\n', '2020-11-23'),
+(4, 'Note-4', 'Piet Pompies', '<p>This is a Note to see if the database is working</p>\r\n', '2020-11-30'),
+(5, 'Roast Leg of Lamb', 'Piet Pompies', '<p><img alt=\"\" src=\"https://img.jamieoliver.com/jamieoliver/recipe-database/68834659.jpg?tr=w-800,h-1066\" style=\"height:533px; width:400px\" /></p>\r\n\r\n<h2>Ingredients</h2>\r\n\r\n<ul>\r\n	<li>2 kg leg of lamb or hogget</li>\r\n	<li>1 bulb of garlic</li>\r\n	<li>&frac12; a bunch of fresh rosemary</li>\r\n	<li>1.5 kg potatoes</li>\r\n	<li>1 lemon</li>\r\n	<li>olive oil</li>\r\n	<li>MINT SAUCE</li>\r\n	<li>1 bunch of fresh mint</li>\r\n	<li>1 teaspoon sugar</li>\r\n	<li>3 tablespoons wine vinegar</li>\r\n</ul>\r\n\r\n<h2>Method</h2>\r\n\r\n<ol>\r\n	<li>Remove the lamb from the fridge 1 hour before you want to cook it, to let it come up to room temperature.</li>\r\n	<li>Preheat the oven to 200&ordm;C/400&ordm;F/gas 6 and place a roasting dish for the potatoes on the bottom.</li>\r\n	<li>Break the garlic bulb up into cloves, then peel 3, leaving the rest whole. Pick and roughly chop half the rosemary leaves. Peel and halve the potatoes.</li>\r\n	<li>Crush the peeled garlic into a bowl, add the chopped rosemary, finely grate in the lemon zest and drizzle in a good lug of oil, then mix together.</li>\r\n	<li>Season the lamb with sea salt and black pepper, then drizzle with the marinade and rub all over the meat. Place on the hot bars of the oven above the tray.</li>\r\n	<li>Parboil the potatoes in a pan of boiling salted water for 10 minutes, then drain and allow to steam dry. Gently toss the potatoes in the colander to scuff up the edges, then tip back into the pan.</li>\r\n	<li>Add the remaining rosemary sprigs and whole garlic cloves to the potatoes, season with salt and pepper, then drizzle over a good lug of oil. Tip the potatoes into the hot tray and place back under the lamb to catch all the lovely juices.</li>\r\n	<li>Cook the lamb for 1 hour 15 minutes if you want it pink, or 1 hour 30 minutes if you like it more well done.</li>\r\n	<li>Meanwhile, make the mint sauce. Pick and finely chop the mint leaves, then place in a small bowl. Mix in the sugar, a good pinch of salt, 1 tablespoon of hot water and the vinegar.</li>\r\n	<li>When the lamb is cooked to your liking, remove from the oven and leave to rest for 15 minutes or so. Carve and serve with the roast potatoes, mint sauce and some seasonal greens.</li>\r\n</ol>\r\n', '2020-11-30');
+
+INSERT INTO `faqs` (`id`, `title`, `author`, `description`, `create_date`) VALUES
+(1, 'FAQ-1', 'Piet Pompies', '<p>First FAQ added to the Database</p>\r\n', '2020-11-24'),
+(2, 'FAQ-2', 'Piet Pompies', '<p>This&nbsp; is the second FAQ</p>\r\n', '2020-11-24'),
+(3, 'FAQ-3', 'Piet Pompies', '<p>Third FAQ added to the Database</p>\r\n', '2020-11-24'),
+(4, 'FAQ-4', 'Piet Pompies', '<p>This&nbsp; is the FOURTH FAQ</p>\r\n', '2020-11-24'),
+(5, 'FAQ-5', 'Jan Pampoen', '<p>This is the Fifth FAQ</p>\r\n', '2020-11-30'),
+(6, 'FAQ-6', 'Jan Pampoen', '<p>This is the Sixth FAQ</p>\r\n', '2020-11-30');
+
+-----------------------------
 
 SHOW TABLES;
 DESCRIBE users;
@@ -34,3 +56,5 @@ TRUNCATE TABLE users;
 DESCRIBE notes;
 TRUNCATE TABLE notes;
 SELECT * FROM notes;
+
+

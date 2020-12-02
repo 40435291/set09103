@@ -11,26 +11,19 @@
 
         <a href="/add_faq" class="btn btn-success mt-4">Add a FAQ</a>
         <hr>
+        <table class="table table-striped">
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Date</th>
+                <th></th>
+                <th></th>
+            </tr>
 
-        {% for faq in faqs %}
-            <ul class="list-group">
-                    <li class="list-group-item"><a href="faq/{{faq.id}}">{{faq.title}}</a></li>
-            </ul>
-
-            {% if session.name == faq.author: %}
-                <!-- <small>Session: {{session.name}} - Author: {{faq.author}}</small> -->
-                <hr>
-                <table class="table table-striped">
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Date</th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-
-                    
+            {% for faq in faqs %}
+                {% if session.name == faq.author: %}
+                    <!-- <small>Session: {{session.name}} - Author: {{faq.author}}</small> -->
                     <tr>
                         <td>{{faq.id}}</td>
                         <td>{{faq.title}}</td>
@@ -42,14 +35,17 @@
                                 <input type="hidden" name="_method" value="DELETE">
                                 <input type="submit" class="btn btn-danger" value="DELETE">
                             </form>
-                    </td>
+                        </td>
                     </tr>
-                </table>
-                <hr>
-            {% endif %}
-
-        {% endfor %}
-
+                {% endif %}
+            {% endfor %}
+        </table>
+        <hr>
+        <ul class="list-group">
+            {% for faq in faqs %}
+            <li class="list-group-item"><a href="faq/{{faq.id}}">{{faq.title}}</a></li>
+            {% endfor %}
+        </ul>
     {% else: %}
         <h1>FAQs</h1>
 
